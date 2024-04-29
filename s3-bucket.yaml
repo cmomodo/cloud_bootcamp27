@@ -1,0 +1,10 @@
+#cloud formation template version
+#description: This template creates an s3 instance
+
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Cloudformation template for S3 Bucket"
+Resources:
+  MyS3Bucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "jimmybucket221a"
