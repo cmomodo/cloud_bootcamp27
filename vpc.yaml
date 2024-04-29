@@ -1,0 +1,127 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Cloudformation template for VPC"
+Resources:
+  #internet gateway
+  InternetGateway:
+    Type: "AWS::EC2::InternetGateway"
+    Properties:
+      Tags:
+        - Key: "Name"
+          Value: "InternetGateway"
+  MyVPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: "172.16.16.0/16"
+      EnableDnsSupport: "true"
+      EnableDnsHostnames: "true"
+      Tags:
+        - Key: "Name"
+          Value: "MyVPC"
+
+  #attach internet gateway to vpc
+  AttachGateway:
+    Type: "AWS::EC2::VPCGatewayAttachment"
+    Properties:
+      VpcId: !Ref MyVPC
+      InternetGatewayId: !Ref InternetGateway
+
+  #route table
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyVPC
+      Tags:
+        - Key: "Name"
+          Value: "PublicRouteTable"
+
+  #route to internet gateway
+  PublicRoute:
+    Type: "AWS::EC2::Route"
+    DependsOn: "AttachGateway"
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnet1A:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: "172.16.1.0/24"
+      AvailabilityZone: "eu-west-1a"
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: "Name"
+          Value: "PublicSubnet1A"
+
+  #create the app subnet in the same availability zone as the public subnet
+  AppSubnet1A:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: "172.16.2.0/24"
+      AvailabilityZone: "eu-west-1a"
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: "Name"
+          Value: "AppSubnet1A"
+
+  #create the database subnet in a the same availabililty zone
+  DatabaseSubnet1A:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: "172.16.3.0/24"
+      AvailabilityZone: "eu-west-1a"
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: "Name"
+          Value: "DatabaseSubnet1A"
+
+  PublicSubnet1B:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: "172.16.4.0/24"
+      AvailabilityZone: "eu-west-1b"
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: "Name"
+          Value: "PublicSubnet1B"
+
+  #create the app subnet in the same availability zone as the public subnet
+  AppSubnet1B:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: "172.16.5.0/24"
+      AvailabilityZone: "eu-west-1b"
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: "Name"
+          Value: "AppSubnet1B"
+
+  #create the database subnet in a the same availabililty zone
+  DatabaseSubnet1B:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: "172.16.6.0/24"
+      AvailabilityZone: "eu-west-1b"
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: "Name"
+          Value: "DatabaseSubnet1B"
+
+  #add route table associations for public subnets
+  PublicSubnet1ARouteTableAssociation:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref PublicSubnet1A
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnet1BRouteTableAssociation:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref PublicSubnet1B
+      RouteTableId: !Ref PublicRouteTable
