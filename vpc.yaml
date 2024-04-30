@@ -125,3 +125,37 @@ Resources:
     Properties:
       SubnetId: !Ref PublicSubnet1B
       RouteTableId: !Ref PublicRouteTable
+
+  #bastian host ec2
+  BastianHost:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      InstanceType: "t2.micro"
+      ImageId: "ami-0dfdc165e7af15242"
+      KeyName: "EC2_Tutorial"
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          DeleteOnTermination: true
+          SubnetId: !Ref PublicSubnet1A
+
+  #security group for bastian host
+  MySecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupName: "MySecurityGroup"
+      GroupDescription: "My Security group"
+      VpcId: !Ref MyVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: "Name"
+          Value: "MySecurityGroup"
