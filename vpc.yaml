@@ -138,6 +138,11 @@ Resources:
           DeviceIndex: 0
           DeleteOnTermination: true
           SubnetId: !Ref PublicSubnet1A
+          GroupSet:
+            - !Ref MySecurityGroup
+      Tags:
+        - Key: "Name"
+          Value: "BastianHost"
 
   #security group for bastian host
   MySecurityGroup:
@@ -150,11 +155,6 @@ Resources:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: 0.0.0.0/0
-      SecurityGroupEgress:
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
           CidrIp: 0.0.0.0/0
       Tags:
         - Key: "Name"
