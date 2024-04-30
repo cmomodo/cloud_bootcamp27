@@ -155,7 +155,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: 0.0.0.0/0
+          CidrIp: 18.202.216.48/29
       Tags:
         - Key: "Name"
           Value: "MySecurityGroup"
