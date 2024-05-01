@@ -144,6 +144,23 @@ Resources:
         - Key: "Name"
           Value: "BastianHost"
 
+  PrivateEC2Instance1A:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      InstanceType: "t2.micro"
+      ImageId: "ami-0dfdc165e7af15242"
+      KeyName: "EC2_Tutorial"
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          DeleteOnTermination: true
+          SubnetId: !Ref AppSubnet1A
+          GroupSet:
+            - !Ref MySecurityGroup
+      Tags:
+        - Key: "Name"
+          Value: "PrivateEC2Instance1A"
+
   #security group for bastian host
   MySecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
