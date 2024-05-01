@@ -156,7 +156,7 @@ Resources:
           DeleteOnTermination: true
           SubnetId: !Ref AppSubnet1A
           GroupSet:
-            - !Ref MySecurityGroup
+            - !Ref MySecurityGroupForPrivateEc2Instance
       Tags:
         - Key: "Name"
           Value: "PrivateEC2Instance1A"
@@ -176,3 +176,21 @@ Resources:
       Tags:
         - Key: "Name"
           Value: "MySecurityGroup"
+
+  #create another security group this will be associated
+  #with the private ec2 instance
+
+  MySecurityGroupForPrivateEc2Instance:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupName: "MySecurityGroupForPrivateEc2Instance"
+      GroupDescription: "My Security group for private ec2 instance"
+      VpcId: !Ref MyVPC
+      SecurityGroupIngress:
+        - IpProtocol: icmp
+          FromPort: -1
+          ToPort: -1
+          SourceSecurityGroupId: !Ref MySecurityGroup
+      Tags:
+        - Key: "Name"
+          Value: "MySecurityGroupForPrivateEc2Instance"
