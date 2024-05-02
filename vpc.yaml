@@ -139,23 +139,104 @@ Resources:
           DeleteOnTermination: true
           SubnetId: !Ref PublicSubnet1A
           GroupSet:
-            - !Ref MySecurityGroup
+            - !Ref BastianSG
       Tags:
         - Key: "Name"
           Value: "BastianHost"
 
-  #security group for bastian host
-  MySecurityGroup:
+    #security group for bastian host
+  BastianSG:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
-      GroupName: "MySecurityGroup"
-      GroupDescription: "My Security group"
+      GroupName: "BastianSecurityGroup"
+      GroupDescription: "Enable SSH Access"
       VpcId: !Ref MyVPC
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: 0.0.0.0/0
+          CidrIp: 31.94.66.143/32
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 18.202.216.48/29
       Tags:
         - Key: "Name"
-          Value: "MySecurityGroup"
+          Value: "BastianSG"
+
+  #instance for app subnet
+  AppInstance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      InstanceType: "t2.micro"
+      ImageId: "ami-0dfdc165e7af15242"
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          DeleteOnTermination: true
+          SubnetId: !Ref AppSubnet1A
+          GroupSet:
+            - !Ref AppSG
+      Tags:
+        - Key: "Name"
+          Value: "AppInstance"
+
+  #security group for app instance
+  AppSG:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupName: "AppSecurityGroup"
+      GroupDescription: "allow ssh from bastian"
+      VpcId: !Ref MyVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          SourceSecurityGroupId: !Ref BastianSG
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 18.202.216.48/29
+        - IpProtocol: icmp
+          FromPort: -1
+          ToPort: -1
+      Tags:
+        - Key: "Name"
+          Value: "AppSG"
+
+  #instance for database subnet
+  DataInstance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      InstanceType: "t2.micro"
+      ImageId: "ami-0dfdc165e7af15242"
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          DeleteOnTermination: true
+          SubnetId: !Ref DatabaseSubnet1A
+          GroupSet:
+            - !Ref DatabaseSG
+      Tags:
+        - Key: "Name"
+          Value: "DatabaseInstance"
+
+  #security group for database instance
+  DatabaseSG:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupName: "DatabaseSecurityGroup"
+      GroupDescription: "allow ping from app subnet"
+      VpcId: !Ref MyVPC
+      SecurityGroupIngress:
+        - IpProtocol: icmp
+          FromPort: -1
+          ToPort: -1
+          SourceSecurityGroupId: !Ref AppSG
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 18.202.216.48/29
+      Tags:
+        - Key: "Name"
+          Value: "DatabaseSG"
