@@ -155,7 +155,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: 31.94.66.143/32
+          CidrIp: 92.25.82.97/32 #This is the IP address of my home
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
@@ -165,11 +165,12 @@ Resources:
           Value: "BastianSG"
 
   #instance for app subnet
-  AppInstance:
+  AppInstance1A:
     Type: "AWS::EC2::Instance"
     Properties:
       InstanceType: "t2.micro"
       ImageId: "ami-0dfdc165e7af15242"
+      KeyName: "EC2_Tutorial"
       NetworkInterfaces:
         - AssociatePublicIpAddress: true
           DeviceIndex: 0
@@ -179,7 +180,7 @@ Resources:
             - !Ref AppSG
       Tags:
         - Key: "Name"
-          Value: "AppInstance"
+          Value: "AppInstance1A"
 
   #security group for app instance
   AppSG:
@@ -197,15 +198,12 @@ Resources:
           FromPort: 22
           ToPort: 22
           CidrIp: 18.202.216.48/29
-        - IpProtocol: icmp
-          FromPort: -1
-          ToPort: -1
       Tags:
         - Key: "Name"
           Value: "AppSG"
 
   #instance for database subnet
-  DataInstance:
+  AppInstance2B:
     Type: "AWS::EC2::Instance"
     Properties:
       InstanceType: "t2.micro"
@@ -226,17 +224,17 @@ Resources:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
       GroupName: "DatabaseSecurityGroup"
-      GroupDescription: "allow ping from app subnet"
+      GroupDescription: "allow ping from app instance1"
       VpcId: !Ref MyVPC
       SecurityGroupIngress:
         - IpProtocol: icmp
           FromPort: -1
           ToPort: -1
-          SourceSecurityGroupId: !Ref AppSG
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
           CidrIp: 18.202.216.48/29
+          SourceSecurityGroupId: !Ref AppSG
       Tags:
         - Key: "Name"
           Value: "DatabaseSG"
