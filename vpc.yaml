@@ -194,10 +194,6 @@ Resources:
           FromPort: 22
           ToPort: 22
           SourceSecurityGroupId: !Ref BastianSG
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 18.202.216.48/29
       Tags:
         - Key: "Name"
           Value: "AppSG"
@@ -212,29 +208,29 @@ Resources:
         - AssociatePublicIpAddress: true
           DeviceIndex: 0
           DeleteOnTermination: true
-          SubnetId: !Ref DatabaseSubnet1A
+          SubnetId: !Ref AppSubnet1B
           GroupSet:
-            - !Ref DatabaseSG
+            - !Ref AppInstance2BSG
       Tags:
         - Key: "Name"
-          Value: "DatabaseInstance"
+          Value: "APPInstance2b"
 
   #security group for database instance
-  DatabaseSG:
+  AppInstance2BSG:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
-      GroupName: "DatabaseSecurityGroup"
+      GroupName: "APPInstance2BSG"
       GroupDescription: "allow ping from app instance1"
       VpcId: !Ref MyVPC
       SecurityGroupIngress:
         - IpProtocol: icmp
           FromPort: -1
           ToPort: -1
+          SourceSecurityGroupId: !Ref AppSG
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
           CidrIp: 18.202.216.48/29
-          SourceSecurityGroupId: !Ref AppSG
       Tags:
         - Key: "Name"
-          Value: "DatabaseSG"
+          Value: "APP2SG"
