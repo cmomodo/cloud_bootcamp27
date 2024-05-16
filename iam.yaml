@@ -5,3 +5,14 @@ Resources:
       UserName: "ceesayCFN"
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/AdministratorAccess"
+      Groups:
+        - "admin"
+      Policies:
+        - PolicyName: ViewBilling
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "aws-portal:ViewBilling"
+                Resource: "*"
