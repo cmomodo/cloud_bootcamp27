@@ -1,10 +1,7 @@
-Type: AWS::IAM::Policy
-Properties:
-  Groups:
-    - String
-  PolicyDocument: Json
-  PolicyName: String
-  Roles:
-    - String
-  Users:
-    - String
+Resources:
+  MyIAMUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: "ceesayCFN"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AdministratorAccess"
