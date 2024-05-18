@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: An Rds sample database
+Resources:
+  MyRDSInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: 20
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      EngineVersion: 5.7
+      MasterUsername: admin
+      MasterUserPassword: mysecretpassword
+      DBInstanceIdentifier: my-rds-instance
+      VPCSecurityGroups:
+        - sg-0675874225f25c477
+      AvailabilityZone: us-east-1a
