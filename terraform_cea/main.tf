@@ -31,6 +31,16 @@ resource "aws_subnet" "subnet_2" {
   }
 }
 
+resource "aws_subnet" "subnet_3" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "192.168.3.0/24"
+  availability_zone = "us-east-1b"
+
+  tags = {
+    Name = "subnet_3"
+  }
+}
+
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
 
@@ -73,6 +83,15 @@ resource "aws_instance" "my_server" {
   }
 }
 
+resource "aws_instance" "app_server" {
+  ami           = "ami-0bb84b8ffd87024d8"
+  instance_type = "t2.micro"
+  key_name      = "EC2_Tutorial"
+
+  tags = {
+    Name = "AppServer"
+  }
+}
 #describe security group
 resource "aws_security_group" "my_security_group" {
   vpc_id = aws_vpc.main.id
