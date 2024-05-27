@@ -31,6 +31,16 @@ resource "aws_subnet" "subnet_2" {
   }
 }
 
+resource "aws_subnet" "subnet_3" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "192.168.3.0/24"
+  availability_zone = "us-east-1b"
+
+  tags = {
+    Name = "subnet_3"
+  }
+}
+
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
 
