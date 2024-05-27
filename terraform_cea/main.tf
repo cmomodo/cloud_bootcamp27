@@ -83,6 +83,15 @@ resource "aws_instance" "my_server" {
   }
 }
 
+resource "aws_instance" "app_server" {
+  ami           = "ami-0bb84b8ffd87024d8"
+  instance_type = "t2.micro"
+  key_name      = "EC2_Tutorial"
+
+  tags = {
+    Name = "AppServer"
+  }
+}
 #describe security group
 resource "aws_security_group" "my_security_group" {
   vpc_id = aws_vpc.main.id
