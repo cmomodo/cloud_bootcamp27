@@ -27,10 +27,10 @@ resource "aws_s3_bucket_website_configuration" "example" {
 
   index_document {
     suffix = "index.html"
-  } 
+  }
   error_document {
     key = "error.html"
-  
+
   }
 
   routing_rule {
@@ -41,7 +41,7 @@ resource "aws_s3_bucket_website_configuration" "example" {
       replace_key_prefix_with = "documents/"
     }
   }
-  
+
 }
 
 # Set public access block configuration
@@ -52,7 +52,6 @@ resource "aws_s3_bucket_public_access_block" "example" {
   block_public_policy = false
 }
 
-# Set bucket policy to make it publicly accessible
 resource "aws_s3_bucket_policy" "example" {
   bucket = aws_s3_bucket.example.id
 
@@ -65,6 +64,15 @@ resource "aws_s3_bucket_policy" "example" {
             "Effect": "Allow",
             "Principal": "*",
             "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::www.cea27.com/*"
+        },
+        {
+            "Sid": "Statement2",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::449095351082:user/lamin"
+            },
+            "Action": "s3:PutObjectAcl",
             "Resource": "arn:aws:s3:::www.cea27.com/*"
         }
     ]
