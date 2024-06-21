@@ -20,6 +20,14 @@ resource "aws_s3_bucket" "example" {
     Environment = "Dev"
   }
 }
+resource "aws_s3_bucket" "backup" {
+  bucket = "cea27.com"
+
+  tags = {
+    Name        = "Backup bucket"
+    Environment = "Dev2"
+  }
+}
 
 # Configure website hosting for the S3 bucket
 resource "aws_s3_bucket_website_configuration" "example" {
