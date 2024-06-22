@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 # Create an S3 bucket
-resource "aws_s3_bucket" "example" {
+resource "aws_s3_bucket" "website" {
   bucket = "www.cea27.com"
 
   tags = {
@@ -29,9 +29,50 @@ resource "aws_s3_bucket" "backup" {
   }
 }
 
+# Create a bucket policy
+resource "aws_s3_bucket_policy" "backup" {
+  bucket = aws_s3_bucket.backup.id
+
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::cea27.com/*"
+    }
+  ]
+}
+POLICY
+}
+
+# Configuring the backup bucket for static website hosting
+resource "aws_s3_bucket_website_configuration" "backup" {
+  bucket = aws_s3_bucket.backup.id
+
+  index_document {
+    suffix = "index.html"
+  }
+  error_document {
+   key = "error.html" 
+  }
+
+  routing_rule {
+    condition {
+      key_prefix_equals = "docs/"
+    }
+    redirect {
+      replace_key_prefix_with = "documents/"
+    }
+  }
+}
+
+
 # Configure website hosting for the S3 bucket
-resource "aws_s3_bucket_website_configuration" "example" {
-  bucket = aws_s3_bucket.example.id
+resource "aws_s3_bucket_website_configuration" "website" {
+  bucket = aws_s3_bucket.website.id
 
   index_document {
     suffix = "index.html"
@@ -53,15 +94,15 @@ resource "aws_s3_bucket_website_configuration" "example" {
 }
 
 # Set public access block configuration
-resource "aws_s3_bucket_public_access_block" "example" {
-  bucket = aws_s3_bucket.example.id
+resource "aws_s3_bucket_public_access_block" "website" {
+  bucket = aws_s3_bucket.website.id
 
   block_public_acls   = false
   block_public_policy = false
 }
 
-resource "aws_s3_bucket_policy" "example" {
-  bucket = aws_s3_bucket.example.id
+resource "aws_s3_bucket_policy" "website" {
+  bucket = aws_s3_bucket.website.id
 
   policy = <<POLICY
 {
@@ -87,3 +128,8 @@ resource "aws_s3_bucket_policy" "example" {
 }
 POLICY
 }
+
+resource "aws_route53_zone" "primary" {
+  name = "cea27.com"
+}
+
