@@ -9,3 +9,4 @@ jobs:
         run: echo "Hello, world!"
       - name: Display repo name
         run: echo "This workflow is running in ${{github.repository}}"
+        path: github_actions/.github/main.yaml
