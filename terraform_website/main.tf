@@ -20,6 +20,9 @@ resource "aws_s3_bucket" "website" {
     Environment = "Dev"
   }
 }
+
+#add cloudfront distribution
+
 resource "aws_s3_bucket" "backup" {
   bucket = "cea27.com"
 
@@ -56,7 +59,7 @@ resource "aws_s3_bucket_website_configuration" "backup" {
     suffix = "index.html"
   }
   error_document {
-   key = "error.html" 
+    key = "error.html"
   }
 
   routing_rule {
@@ -131,5 +134,10 @@ POLICY
 
 resource "aws_route53_zone" "primary" {
   name = "cea27.com"
+}
+
+
+locals {
+  s3_origin_id = "myS3Origin"
 }
 
