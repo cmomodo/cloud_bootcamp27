@@ -4,11 +4,12 @@ This project demonstrates various approaches to implementing AWS infrastructure 
 
 ## Project Components
 
-This repository is organized into three main sections:
+This repository is organized into four main sections:
 
 1. [AWS CloudFormation Templates](./cea_cloudformation/README.md) - Infrastructure as Code using AWS CloudFormation
-2. [Terraform CEA Infrastructure](./terraform_cea/README.md) - Core infrastructure provisioning with Terraform
-3. [Terraform S3 Website](./terraform_website/README.md) - Static website hosting with S3 using Terraform
+2. [AWS CDK Infrastructure](./cdk_cea/README.md) - Infrastructure as Code using AWS CDK with TypeScript
+3. [Terraform CEA Infrastructure](./terraform_cea/README.md) - Core infrastructure provisioning with Terraform
+4. [Terraform S3 Website](./terraform_website/README.md) - Static website hosting with S3 using Terraform
 
 ## AWS Services Used
 
