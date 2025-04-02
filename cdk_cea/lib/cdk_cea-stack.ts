@@ -3,16 +3,22 @@ import { Construct } from "constructs";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 
 export class CdkCeaStack extends cdk.Stack {
+  public readonly vpc: ec2.Vpc;
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, "MyVpc", {
+    this.vpc = new ec2.Vpc(this, "MyVpc", {
       maxAzs: 2,
-      cidr: "10.0.0.0/16",
+      ipAddresses: ec2.IpAddresses.cidr("10.0.0.0/16"),
       subnetConfiguration: [
         {
           name: "Public",
           subnetType: ec2.SubnetType.PUBLIC,
+          cidrMask: 24,
+        },
+        {
+          name: "Private",
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
           cidrMask: 24,
         },
         {
@@ -25,7 +31,7 @@ export class CdkCeaStack extends cdk.Stack {
 
     //create security group
     const securityGroup = new ec2.SecurityGroup(this, "EC2SecurityGroup", {
-      vpc,
+      vpc: this.vpc,
       description: "Allow SSH access from anywhere",
       allowAllOutbound: true,
     });
@@ -37,7 +43,7 @@ export class CdkCeaStack extends cdk.Stack {
 
     //create EC2 instance
     const instance = new ec2.Instance(this, "EC2Instance", {
-      vpc,
+      vpc: this.vpc,
       vpcSubnets: {
         subnetType: ec2.SubnetType.PUBLIC, // placed inside subnet created earlier
       },
@@ -54,9 +60,9 @@ export class CdkCeaStack extends cdk.Stack {
 
     //EC2 into private instance
     const privateInstance = new ec2.Instance(this, "PrivateEC2Instance", {
-      vpc,
+      vpc: this.vpc,
       vpcSubnets: {
-        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       },
       instanceType: ec2.InstanceType.of(
         ec2.InstanceClass.T2,
@@ -73,7 +79,7 @@ export class CdkCeaStack extends cdk.Stack {
     cdk.Tags.of(instance).add("Name", "MyCdkPublicInstance");
 
     new cdk.CfnOutput(this, "VpcId", {
-      value: vpc.vpcId,
+      value: this.vpc.vpcId,
       description: "The ID of the VPC",
     });
 
