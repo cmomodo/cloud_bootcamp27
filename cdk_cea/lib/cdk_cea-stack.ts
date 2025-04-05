@@ -22,7 +22,7 @@ export class CdkCeaStack extends cdk.Stack {
           cidrMask: 24,
         },
         {
-          name: "Private",
+          name: "PrivateRdsSubnet",
           subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
           cidrMask: 24,
         },
