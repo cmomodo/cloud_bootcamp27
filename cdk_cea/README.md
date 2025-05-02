@@ -2,6 +2,10 @@
 
 This project uses AWS Cloud Development Kit (CDK) with TypeScript to deploy infrastructure as code. The infrastructure includes EC2 instances deployed within a VPC with proper networking configuration.
 
+## System Design
+![system design ](design/two-tier.png)
+
+
 ## Project Structure
 
 - `lib/cdk_cea-stack.ts` - Main infrastructure stack definition
