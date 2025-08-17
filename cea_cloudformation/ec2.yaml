@@ -11,7 +11,7 @@ Resources:
   MyVPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: 172.16.16.0/16
+      CidrBlock: 172.16.0.0/16
       EnableDnsSupport: "true"
       EnableDnsHostnames: "true"
       Tags:
@@ -184,7 +184,7 @@ Resources:
             - !Ref WebServerSecurityGroup
       Tags:
         - Key: Name
-          Value: WebServerInstance1A
+          Value: Bastion
       UserData: !Base64
         Fn::Sub: |
           #!/bin/bash
@@ -211,7 +211,7 @@ Resources:
             - !Ref WebServerSecurityGroup
       Tags:
         - Key: Name
-          Value: WebServerInstance1B
+          Value: Bastion
       UserData: !Base64
         Fn::Sub: |
           #!/bin/bash
