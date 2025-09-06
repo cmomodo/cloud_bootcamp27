@@ -1,0 +1,63 @@
+{
+  "name": "aws-iam-stack",
+  "version": "0.1.0",
+  "bin": {
+    "aws-iam-stack": "bin/aws-iam-stack.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:policy": "jest --testPathPattern=policy-validation",
+    "test:security": "jest --testPathPattern=comprehensive-security",
+    "test:all": "jest --verbose",
+    "cdk": "cdk",
+    "synth": "cdk synth",
+    "deploy": "cdk deploy",
+    "diff": "cdk diff",
+    "destroy": "cdk destroy",
+    "docs:generate": "node scripts/generate-docs.js",
+    "docs:serve": "python3 -m http.server 8000 --directory docs",
+    "deploy:prod": "scripts/deploy.sh -e production",
+    "deploy:staging": "scripts/deploy.sh -e staging",
+    "deploy:dev": "scripts/deploy.sh -e development -y",
+    "validate": "scripts/validate-deployment.sh",
+    "validate:staging": "scripts/validate-deployment.sh -e staging",
+    "validate:dev": "scripts/validate-deployment.sh -e development",
+    "validate:security": "scripts/automated-security-validation.sh",
+    "validate:security:staging": "scripts/automated-security-validation.sh -e staging",
+    "validate:security:dev": "scripts/automated-security-validation.sh -e development",
+    "test:permissions": "scripts/test-permissions.sh -i",
+    "test:permissions:dev": "scripts/test-permissions.sh -r developer",
+    "test:permissions:ops": "scripts/test-permissions.sh -r operations",
+    "test:permissions:finance": "scripts/test-permissions.sh -r finance",
+    "test:permissions:analyst": "scripts/test-permissions.sh -r analyst",
+    "test:permissions:all": "scripts/test-permissions.sh -r all",
+    "test:boundaries": "scripts/permission-boundary-test.sh",
+    "test:boundaries:comprehensive": "scripts/permission-boundary-test.sh -c",
+    "test:compliance": "scripts/security-compliance-audit.sh",
+    "test:compliance:soc2": "scripts/security-compliance-audit.sh -f SOC2",
+    "test:compliance:iso27001": "scripts/security-compliance-audit.sh -f ISO27001",
+    "test:compliance:cis": "scripts/security-compliance-audit.sh -f CIS",
+    "audit:security": "scripts/security-audit-report.sh",
+    "audit:security:json": "scripts/security-audit-report.sh -f json",
+    "test:e2e": "scripts/e2e-test.sh",
+    "test:e2e:staging": "scripts/e2e-test.sh -e staging",
+    "test:e2e:dev": "scripts/e2e-test.sh -e development"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "22.7.9",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "aws-cdk": "2.1020.2",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.6.3"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "2.202.0",
+    "constructs": "^10.0.0"
+  }
+}

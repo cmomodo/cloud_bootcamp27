@@ -1,0 +1,37 @@
+{
+  "environment": "dev",
+  "region": "us-east-1",
+  "account": "123456789012",
+  "stackName": "TechHealth-Dev-Infrastructure",
+  "parameters": {
+    "vpcCidr": "10.0.0.0/16",
+    "instanceType": "t2.micro",
+    "instanceCount": 1,
+    "dbInstanceClass": "db.t3.micro",
+    "multiAz": false,
+    "backupRetentionDays": 1,
+    "deletionProtection": false,
+    "enableDetailedMonitoring": false,
+    "enableAutoShutdown": true,
+    "costAlertThreshold": 50,
+    "allowedSshCidrs": ["0.0.0.0/0"]
+  },
+  "tags": {
+    "Environment": "dev",
+    "Project": "TechHealth-Infrastructure-Modernization",
+    "Owner": "DevOps-Team",
+    "CostCenter": "TechHealth-IT",
+    "Application": "Patient-Portal",
+    "Compliance": "HIPAA",
+    "BackupRequired": "true",
+    "MonitoringEnabled": "true",
+    "AutoShutdown": "true"
+  },
+  "features": {
+    "enableVpcFlowLogs": true,
+    "enableCloudTrail": true,
+    "enableEnhancedMonitoring": false,
+    "enablePerformanceInsights": false,
+    "enableSpotInstances": false
+  }
+}

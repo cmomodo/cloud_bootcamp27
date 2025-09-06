@@ -1,0 +1,37 @@
+{
+  "environment": "staging",
+  "region": "us-east-1",
+  "account": "123456789013",
+  "stackName": "TechHealth-Staging-Infrastructure",
+  "parameters": {
+    "vpcCidr": "10.1.0.0/16",
+    "instanceType": "t3.small",
+    "instanceCount": 2,
+    "dbInstanceClass": "db.t3.small",
+    "multiAz": true,
+    "backupRetentionDays": 7,
+    "deletionProtection": false,
+    "enableDetailedMonitoring": true,
+    "enableAutoShutdown": true,
+    "costAlertThreshold": 200,
+    "allowedSshCidrs": ["10.0.0.0/8"]
+  },
+  "tags": {
+    "Environment": "staging",
+    "Project": "TechHealth-Infrastructure-Modernization",
+    "Owner": "DevOps-Team",
+    "CostCenter": "TechHealth-IT",
+    "Application": "Patient-Portal",
+    "Compliance": "HIPAA",
+    "BackupRequired": "true",
+    "MonitoringEnabled": "true",
+    "AutoShutdown": "true"
+  },
+  "features": {
+    "enableVpcFlowLogs": true,
+    "enableCloudTrail": true,
+    "enableEnhancedMonitoring": true,
+    "enablePerformanceInsights": false,
+    "enableSpotInstances": false
+  }
+}
