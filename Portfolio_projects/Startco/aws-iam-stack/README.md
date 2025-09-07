@@ -22,12 +22,12 @@ Security is a core focus, with strict enforcement of the principle of least priv
 
 ## Features
 
--   **IAM Users:** Creates individual IAM users for team members.
--   **IAM Groups:** Defines IAM groups with specific permissions.
--   **IAM Policies:** Attaches fine-grained IAM policies to groups and roles.
--   **IAM Roles:** Creates IAM roles for different levels of access (e.g., Analyst, Developer, Finance).
--   **Multi-Environment Support:** Designed for Production, Staging, and Testing environments.
--   **Blue-Green Deployments:** Enables seamless releases with minimal downtime.
+- **IAM Users:** Creates individual IAM users for team members.
+- **IAM Groups:** Defines IAM groups with specific permissions.
+- **IAM Policies:** Attaches fine-grained IAM policies to groups and roles.
+- **IAM Roles:** Creates IAM roles for different levels of access (e.g., Analyst, Developer, Finance).
+- **Multi-Environment Support:** Designed for Production, Staging, and Testing environments.
+- **Blue-Green Deployments:** Enables seamless releases with minimal downtime.
 
 ## System Architecture
 
@@ -37,10 +37,10 @@ Security is a core focus, with strict enforcement of the principle of least priv
 
 ### Prerequisites
 
--   [AWS CLI](https://aws.amazon.com/cli/)
--   [Node.js](https://nodejs.org/en/download/)
--   [AWS CDK](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html)
--   An AWS account with the necessary permissions
+- [AWS CLI](https://aws.amazon.com/cli/)
+- [Node.js](https://nodejs.org/en/download/)
+- [AWS CDK](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html)
+- An AWS account with the necessary permissions
 
 ### Installation
 

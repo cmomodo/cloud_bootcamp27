@@ -24,7 +24,7 @@ This repository is organized into five main sections:
 2.  [AWS CDK Infrastructure](./cdk_cea/README.md) - Infrastructure as Code using AWS CDK with TypeScript
 3.  [Terraform CEA Infrastructure](./terraform_cea/README.md) - Core infrastructure provisioning with Terraform
 4.  [Terraform S3 Website](./terraform_website/README.md) - Static website hosting with S3 using Terraform
-5.  [AWS Portfolio Projects](./aws-iam-stack/README.md) - IAM user, group, and role management with AWS CDK
+5.  [AWS Portfolio Projects](./Portfolio_projects/README.md) - IAM user, group, and role management with AWS CDK
 
 ## AWS Services Used
 
