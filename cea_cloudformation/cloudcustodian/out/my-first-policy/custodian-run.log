@@ -1,0 +1,7 @@
+2025-08-17 15:01:35,316 - custodian.policy - INFO - policy:my-first-policy resource:aws.ec2 region:us-east-1 count:0 time:0.95
+2025-08-17 15:36:22,003 - custodian.policy - INFO - policy:my-first-policy resource:aws.ec2 region:us-east-1 count:2 time:1.00
+2025-08-17 15:39:52,975 - custodian.policy - INFO - policy:my-first-policy resource:aws.ec2 region:us-east-1 count:2 time:0.00
+2025-08-17 15:39:52,976 - custodian.actions - WARNING - stop implicitly filtered 0 of 2 resources key:State.Name on running
+2025-08-17 15:39:52,976 - custodian.policy - INFO - policy:my-first-policy action:stop resources:2 execution_time:0.00
+2025-08-17 15:45:58,339 - custodian.policy - INFO - policy:my-first-policy resource:aws.ec2 region:us-east-1 count:2 time:0.00
+2025-08-17 15:45:59,744 - custodian.policy - INFO - policy:my-first-policy action:stop resources:2 execution_time:1.40

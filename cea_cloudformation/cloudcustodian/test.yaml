@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Bastion host in a provided VPC and subnet
+
+x-definitions:
+  bastion-name: &bastionName Bastion
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+  SubnetId:
+    Type: AWS::EC2::Subnet::Id
+  BastionInstanceType:
+    Type: String
+    Default: t3.micro
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: SSH key pair for Bastion
+  AmiId:
+    Type: AWS::EC2::Image::Id
+    Description: Bastion AMI (region-specific)
+Resources:
+  BastionSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SSH access to Bastion
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+  BastionInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref BastionInstanceType
+      SubnetId: !Ref SubnetId
+      ImageId: !Ref AmiId
+      KeyName: !Ref KeyName
+      SecurityGroupIds:
+        - !Ref BastionSecurityGroup
+      Tags:
+        - Key: Name
+          Value: *bastionName
+        - Key: Custodian
+          Value: *bastionName
+Outputs:
+  BastionPublicIP:
+    Description: Public IP of Bastion
+    Value: !GetAtt BastionInstance.PublicIp

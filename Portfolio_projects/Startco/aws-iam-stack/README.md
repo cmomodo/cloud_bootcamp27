@@ -1,21 +1,73 @@
-# Welcome to your CDK TypeScript project
+# AWS IAM Stack with CDK
 
-# About
+This project provides a foundational AWS IAM stack created with the AWS Cloud Development Kit (CDK). It's designed to establish a secure and scalable IAM structure for a new AWS environment.
 
-I am responsible for designing and deploying the company's infrastructure from the ground up. The project leverages AWS CDK to define resources as code, ensuring scalability, repeatability, and maintainability. To support automation and validation, we incorporate Bash scripts for testing key functionalities.
+## Table of Contents
 
-The infrastructure is structured across multiple environments — Production, Staging, and Testing — and utilizes a blue-green deployment strategy to enable seamless releases with minimal downtime. Security is a core focus, with strict enforcement of the principle of least privilege across all resources.
+- [About the Project](#about-the-project)
+- [Features](#features)
+- [System Architecture](#system-architecture)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Deployment](#deployment)
+- [Testing](#testing)
+- [Blog Post](#blog-post)
 
-As this initiative is primarily centered around IAM management, most of the implementation revolves around securely creating and managing IAM users, groups, and policies to establish a strong foundation for the organization's cloud operations.
+## About the Project
 
-- IAM User
-- IAM Group
-- IAM Policy
-- IAM Role
+This project is responsible for designing and deploying the company's IAM infrastructure from the ground up. It leverages the AWS CDK to define resources as code, ensuring scalability, repeatability, and maintainability. The infrastructure is designed to support multiple environments (Production, Staging, and Testing) and utilizes a blue-green deployment strategy for seamless releases.
 
-## Role Test Results
+Security is a core focus, with strict enforcement of the principle of least privilege across all resources. This project securely creates and manages IAM users, groups, and policies to establish a strong foundation for the organization's cloud operations.
 
-Below are screenshots of the test results for different IAM roles:
+## Features
+
+-   **IAM Users:** Creates individual IAM users for team members.
+-   **IAM Groups:** Defines IAM groups with specific permissions.
+-   **IAM Policies:** Attaches fine-grained IAM policies to groups and roles.
+-   **IAM Roles:** Creates IAM roles for different levels of access (e.g., Analyst, Developer, Finance).
+-   **Multi-Environment Support:** Designed for Production, Staging, and Testing environments.
+-   **Blue-Green Deployments:** Enables seamless releases with minimal downtime.
+
+## System Architecture
+
+![IAM Final Architecture](Role_test/iam-final.png)
+
+## Getting Started
+
+### Prerequisites
+
+-   [AWS CLI](https://aws.amazon.com/cli/)
+-   [Node.js](https://nodejs.org/en/download/)
+-   [AWS CDK](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html)
+-   An AWS account with the necessary permissions
+
+### Installation
+
+1.  Clone the repository:
+    ```bash
+    git clone <repository-url>
+    ```
+2.  Navigate to the project directory:
+    ```bash
+    cd Portfolio_projects/Startco/aws-iam-stack
+    ```
+3.  Install the dependencies:
+    ```bash
+    npm install
+    ```
+
+## Deployment
+
+To deploy the IAM stack, run the following command:
+
+```bash
+cdk deploy
+```
+
+## Testing
+
+This project uses Bash scripts to test the functionality of the IAM roles. The test results are shown below.
 
 ### Analyst Role Test
 
@@ -33,17 +85,7 @@ Below are screenshots of the test results for different IAM roles:
 
 ![Finance Check](Role_test/Finance_check.png)
 
-System Architecture:
+## Blog Post
 
-![IAM Final Architecture](Role_test/iam-final.png)
-
-## Installation
-
-First run the npm install command since we using typescript
-
-Then run cdk deploy
-
-## Blog
-
-for more information about this project check the medium blog:
-https://medium.com/@ceesay.ml
+For more information about this project, check out the Medium blog post:
+[https://medium.com/@ceesay.ml](https://medium.com/@ceesay.ml)

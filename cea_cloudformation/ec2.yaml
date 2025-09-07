@@ -142,6 +142,9 @@ Resources:
   #target group for alb
   MyTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    DependsOn:
+      - WebServerInstance1A
+      - WebServerInstance1B
     Properties:
       Name: MyTargetGroup
       Port: 80
@@ -173,7 +176,7 @@ Resources:
     Properties:
       InstanceType: t2.micro
       ImageId: ami-0bb84b8ffd87024d8
-      KeyName: EC2_Tutorial
+      KeyName: ec2_log
       NetworkInterfaces:
         - AssociatePublicIpAddress: true
           DeviceIndex: 0
@@ -184,7 +187,11 @@ Resources:
             - !Ref WebServerSecurityGroup
       Tags:
         - Key: Name
-          Value: Bastion
+          Value: BastionWebServer1A
+        - Key: CustodianTarget
+          Value: Stop
+        - Key: InstanceID
+          Value: 1A
       UserData: !Base64
         Fn::Sub: |
           #!/bin/bash
@@ -200,7 +207,7 @@ Resources:
     Properties:
       InstanceType: t2.micro
       ImageId: ami-0bb84b8ffd87024d8
-      KeyName: EC2_Tutorial
+      KeyName: ec2_log
       NetworkInterfaces:
         - AssociatePublicIpAddress: true
           DeviceIndex: 0
@@ -211,7 +218,11 @@ Resources:
             - !Ref WebServerSecurityGroup
       Tags:
         - Key: Name
-          Value: Bastion
+          Value: BastionWebServer1B
+        - Key: CustodianTarget
+          Value: Stop
+        - Key: InstanceID
+          Value: 1B
       UserData: !Base64
         Fn::Sub: |
           #!/bin/bash

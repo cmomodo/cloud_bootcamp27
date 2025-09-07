@@ -1,0 +1,72 @@
+{
+  "policy": {
+    "name": "my-first-policy",
+    "resource": "aws.ec2",
+    "filters": [
+      {
+        "tag:Custodian": "Bastion"
+      }
+    ],
+    "actions": [
+      "stop"
+    ]
+  },
+  "version": "0.9.46",
+  "execution": {
+    "id": "c9c831cd-b36c-478d-81b6-c2db0542512a",
+    "start": 1755422198.3718028,
+    "end_time": 1755422199.096906,
+    "duration": 0.7251031398773193
+  },
+  "config": {
+    "region": "us-east-1",
+    "regions": [
+      "us-east-1"
+    ],
+    "cache": "~/.cache/cloud-custodian.cache",
+    "profile": null,
+    "account_id": "449095351082",
+    "assume_role": null,
+    "session_policy": null,
+    "external_id": null,
+    "log_group": null,
+    "tracer": null,
+    "metrics_enabled": null,
+    "metrics": null,
+    "output_dir": ".",
+    "cache_period": 15,
+    "dryrun": false,
+    "authorization_file": null,
+    "subparser": "run",
+    "config": null,
+    "configs": [
+      "bastion.yml"
+    ],
+    "policy_filters": [],
+    "resource_types": [],
+    "verbose": null,
+    "quiet": null,
+    "debug": false,
+    "skip_validation": false,
+    "command": "c7n.commands.run",
+    "vars": null
+  },
+  "sys-stats": {},
+  "api-stats": {
+    "ec2.DescribeInstances": 1
+  },
+  "metrics": [
+    {
+      "MetricName": "ResourceCount",
+      "Timestamp": "2025-08-17T10:16:39.096595",
+      "Value": 0,
+      "Unit": "Count"
+    },
+    {
+      "MetricName": "ResourceTime",
+      "Timestamp": "2025-08-17T10:16:39.096605",
+      "Value": 0.7211997509002686,
+      "Unit": "Seconds"
+    }
+  ]
+}

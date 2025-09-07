@@ -1,0 +1,54 @@
+policies:
+  # Mark non-compliant instances for stoppage in 4 days
+  - name: ec2-tag-compliance-mark
+    resource: ec2
+    description: Mark non-compliant EC2 instances for stop in 4 days
+    mode:
+      type: periodic
+      schedule: rate(12 hours)
+    filters:
+      - "State.Name": running
+      - "tag:ops:ActionDue": absent
+      - or:
+          - "tag:Owner": absent
+          - "tag:CostCenter": absent
+          - "tag:Project": absent
+          - "tag:Environment": absent
+          - "tag:Application": absent
+    actions:
+      - type: mark-for-op
+        tag: ops:ActionDue
+        op: stop
+        days: 4
+      - type: tag
+        tags:
+          ManagedBy: CloudCustodian
+
+  # Stop instances whose ops:ActionDue mark has expired
+  - name: ec2-stop-when-action-due-expired
+    resource: ec2
+    description: Stop instances whose ops:ActionDue tag has expired
+    mode:
+      type: periodic
+      schedule: rate(12 hours)
+    filters:
+      - type: marked-for-op
+        tag: ops:ActionDue
+        op: stop
+    actions:
+      - stop
+
+  # Remove 0.0.0.0/0 SSH ingress on Security Groups
+  - name: sg-remove-global-ssh
+    resource: security-group
+    description: Remove 0.0.0.0/0 SSH ingress
+    mode:
+      type: periodic
+      schedule: rate(1 day)
+    filters:
+      - type: ingress
+        Cidr: 0.0.0.0/0
+        Ports: [22]
+    actions:
+      - type: remove-permissions
+        ingress: matched
