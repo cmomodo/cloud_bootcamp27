@@ -1,13 +1,37 @@
-Portfolio Project:
+## TravelEase
 
-Introduction:
-This portfolio project will focus on creating a form for travelling. This should allow customers to book flights with ease. we are going to be using Amplify for the front end and we will be using lamaba for the servverless functionalities.
+TravelEase is a simple travel booking prototype. It provides an easy way for users to submit flight requests and is built with a serverless mindset.
 
-Prerequisites:
+## Project Structure
+
+- **amplify/** – Frontend application managed by AWS Amplify.
+- **travel_backend/** – Backend infrastructure defined using the AWS Cloud Development Kit (CDK).
+
+## Prerequisites
+
 - Node.js installed on your machine
-- AWS account with Amplify CLI installed
-- AWS Lambda function set up
-- aws cdk for deployment
+- AWS account with Amplify CLI configured
+- AWS CDK CLI
 
-System Design:
+## Getting Started
+
+### Frontend
+
+```
+cd amplify
+npm install
+npm start
+```
+
+### Backend
+
+```
+cd travel_backend
+npm install
+npm run build
+cdk deploy
+```
+
+## System Design
+
 ![Contact Form GIF](system_design/contact_form.gif)
