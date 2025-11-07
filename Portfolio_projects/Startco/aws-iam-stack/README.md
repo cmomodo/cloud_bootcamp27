@@ -6,7 +6,6 @@ This project provides a foundational AWS IAM stack created with the AWS Cloud De
 
 - [About the Project](#about-the-project)
 - [Features](#features)
-
 - [System Architecture](#system-architecture)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)

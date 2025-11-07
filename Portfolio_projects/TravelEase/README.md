@@ -11,3 +11,8 @@ Prerequisites:
 
 System Design:
 ![Contact Form GIF](system_design/contact_form.gif)
+
+the lambda test with sam cli command:
+```
+sam local invoke HelloWorldFunction --env-vars env.json --event events/event.json
+```

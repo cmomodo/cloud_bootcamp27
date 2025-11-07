@@ -1,13 +1,21 @@
 #!/usr/bin/env node
-import * as cdk from 'aws-cdk-lib';
-import { TravelBackendStack } from '../lib/travel_backend-stack';
+import * as cdk from "aws-cdk-lib";
+import { TravelBackendStack } from "../lib/travel_backend-stack";
+import { SesStack } from "../lib/ses-stack";
 
 const app = new cdk.App();
-new TravelBackendStack(app, 'TravelBackendStack', {
-  /* If you don't specify 'env', this stack will be environment-agnostic.
-   * Account/Region-dependent features and context lookups will not work,
-   * but a single synthesized template can be deployed anywhere. */
 
+// Deploy SES stack first
+const sesStack = new SesStack(app, "SesStack", {
+  /* Uncomment the next line to specialize this stack for the AWS Account
+   * and Region that are implied by the current CLI configuration. */
+  // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+});
+
+// Deploy TravelBackend stack with dependency on SES stack
+const travelBackendStack = new TravelBackendStack(app, "TravelBackendStack", {
+  emailIdentity: sesStack.emailIdentity,
+  emailAddress: sesStack.emailAddress,
   /* Uncomment the next line to specialize this stack for the AWS Account
    * and Region that are implied by the current CLI configuration. */
   // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
@@ -18,3 +26,6 @@ new TravelBackendStack(app, 'TravelBackendStack', {
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
+
+// Explicitly add dependency to ensure SES stack deploys first
+travelBackendStack.addDependency(sesStack);
