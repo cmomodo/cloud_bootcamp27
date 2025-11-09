@@ -186,5 +186,9 @@ Thumbs.db
 *.gif
 *.svg
 
+# TravelEase system design assets should be versioned
+!/TravelEase/system_design/*.png
+!/TravelEase/system_design/*.gif
+
 # Kiro files
 .kiro/
