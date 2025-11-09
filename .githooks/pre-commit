@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
+patterns=(
+  'AKIA[0-9A-Z]{16}'
+  'aws_secret_access_key'
+  'aws_access_key_id'
+  '-----BEGIN (RSA )?PRIVATE KEY-----'
+  'SECRET_KEY'
+  'client_secret'
+  '(?i)password\s*='
+)
+
+staged_files=$(git diff --cached --name-only --diff-filter=ACMRTUXB -z)
+if [[ -z "${staged_files}" ]]; then
+  exit 0
+fi
+
+captures=0
+while IFS= read -r -d '' file; do
+  for pattern in "${patterns[@]}"; do
+    matches=$(git grep -n -I -E "${pattern}" --cached -- "${file}" 2>/dev/null || true)
+    if [[ -n "${matches}" ]]; then
+      echo "🚫 Potential secret detected in ${file} (pattern: ${pattern}):"
+      echo "${matches}"
+      captures=1
+    fi
+  done
+done < <(printf '%s' "${staged_files}")
+
+if [[ ${captures} -ne 0 ]]; then
+  echo "Aborting commit; remove or secure the flagged values before committing."
+  exit 1
+fi
