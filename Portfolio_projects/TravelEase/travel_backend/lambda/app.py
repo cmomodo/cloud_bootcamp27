@@ -5,7 +5,9 @@ import uuid
 from datetime import datetime, timezone
 
 import boto3
+import botocore.exceptions
 
+secrets_client = boto3.client("secretsmanager")
 sqs = boto3.client("sqs")
 ses = boto3.client("ses")
 sns = boto3.client("sns")
@@ -13,11 +15,28 @@ dynamodb = boto3.resource("dynamodb")
 
 table_name = os.environ.get("TABLE_NAME")
 queue_url = os.environ.get("QUEUE_URL")
-source_email = os.environ.get("SOURCE_EMAIL")
-owner_email = os.environ.get("OWNER_EMAIL", source_email)
-business_email = os.environ.get("BUSINESS_EMAIL", owner_email)
+email_secret_arn = os.environ.get("EMAIL_SECRET_ARN")
 sns_topic_arn = os.environ.get("SNS_TOPIC_ARN")
 ses_configuration_set = os.environ.get("SES_CONFIGURATION_SET")
+
+# Initialize email addresses by retrieving them from secrets
+source_email = None
+owner_email = None
+business_email = None
+
+if email_secret_arn:
+    try:
+        response = secrets_client.get_secret_value(SecretId=email_secret_arn)
+        secrets = json.loads(response['SecretString'])
+        source_email = secrets.get('sourceEmail')
+        owner_email = secrets.get('ownerEmail', source_email)
+        business_email = secrets.get('businessEmail', owner_email)
+    except botocore.exceptions.ClientError as e:
+        print(f"Error retrieving secrets: {e}")
+        # Fallback to environment variables if secret retrieval fails
+        source_email = os.environ.get("SOURCE_EMAIL", source_email)
+        owner_email = os.environ.get("OWNER_EMAIL", source_email or owner_email)
+        business_email = os.environ.get("BUSINESS_EMAIL", owner_email or business_email)
 
 table = dynamodb.Table(table_name) if table_name else None
 
@@ -50,7 +69,7 @@ def _load_body(event: dict) -> dict:
 def _validate_payload(payload: dict) -> dict:
     """Validate required fields and construct the form data item."""
 
-    required_fields = ["name", "email", "phone", "inquiry_type", "message"]
+    required_fields = ["name", "email", "inquiry_type", "message"]
     missing = [field for field in required_fields if not payload.get(field)]
     if missing:
         raise BadRequestError(f"Missing required fields: {', '.join(missing)}")
@@ -62,7 +81,7 @@ def _validate_payload(payload: dict) -> dict:
         "submission_id": submission_id,
         "name": payload["name"],
         "email": payload["email"],
-        "phone": payload["phone"],
+        "phone": payload.get("phone", ""),
         "inquiry_type": payload["inquiry_type"],
         "message": payload["message"],
         "created_at": timestamp,
@@ -150,7 +169,7 @@ def _build_owner_email(form_data: dict) -> tuple[str, dict]:
 
 def _send_email(recipient: str, subject: str, body: dict) -> dict:
     if not source_email:
-        raise RuntimeError("SOURCE_EMAIL environment variable is not set.")
+        raise RuntimeError("SOURCE_EMAIL is not available (either from secrets or environment variables).")
 
     params: dict = {
         "Source": source_email,

@@ -1,11 +1,21 @@
-import { Duration, RemovalPolicy, Stack, StackProps, CfnOutput } from "aws-cdk-lib";
-import { aws_apigateway as apigw } from "aws-cdk-lib";
+import {
+  Duration,
+  RemovalPolicy,
+  Stack,
+  StackProps,
+  CfnOutput,
+  SecretValue,
+} from "aws-cdk-lib";
+import { aws_apigatewayv2 as apigwv2 } from "aws-cdk-lib";
+import { HttpLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import { aws_dynamodb as dynamodb } from "aws-cdk-lib";
+import { aws_iam as iam } from "aws-cdk-lib";
 import { aws_lambda as lambda } from "aws-cdk-lib";
 import { aws_sns as sns } from "aws-cdk-lib";
 import { aws_sns_subscriptions as subscriptions } from "aws-cdk-lib";
 import { aws_sqs as sqs } from "aws-cdk-lib";
 import { aws_ses as ses } from "aws-cdk-lib";
+import { aws_secretsmanager as secretsmanager } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import * as path from "path";
 
@@ -16,7 +26,7 @@ export interface TravelBackendStackProps extends StackProps {
 }
 
 export class TravelBackendStack extends Stack {
-  public readonly api: apigw.RestApi;
+  public readonly api: apigwv2.HttpApi;
   public readonly queue: sqs.Queue;
   public readonly table: dynamodb.Table;
   public readonly notificationTopic: sns.Topic;
@@ -27,14 +37,18 @@ export class TravelBackendStack extends Stack {
 
     const notificationEmail = props.notificationEmail ?? props.emailAddress;
 
-    this.table = new dynamodb.Table(this, "FormTable", {
-      partitionKey: { name: "submission_id", type: dynamodb.AttributeType.STRING },
+    this.table = new dynamodb.Table(this, "ContactFormSubmissions", {
+      partitionKey: {
+        name: "submission_id",
+        type: dynamodb.AttributeType.STRING,
+      },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY,
       tableName: "travelease-form",
+      pointInTimeRecovery: true,
     });
 
-    this.queue = new sqs.Queue(this, "FormQueue", {
+    this.queue = new sqs.Queue(this, "TravelBackendQueue", {
       visibilityTimeout: Duration.minutes(5),
     });
 
@@ -46,23 +60,42 @@ export class TravelBackendStack extends Stack {
       new subscriptions.EmailSubscription(notificationEmail)
     );
 
-    this.configurationSet = new ses.CfnConfigurationSet(this, "TravelEaseConfigSet", {
-      name: "TravelEaseBounceConfig",
-    });
+    this.configurationSet = new ses.CfnConfigurationSet(
+      this,
+      "TravelEaseConfigSet",
+      {
+        name: "TravelEaseBounceConfig",
+      }
+    );
 
-    new ses.CfnConfigurationSetEventDestination(this, "BounceEventDestination", {
-      configurationSetName: this.configurationSet.name ?? this.configurationSet.ref,
-      eventDestination: {
-        name: "BounceAndComplaintNotifications",
-        enabled: true,
-        matchingEventTypes: ["BOUNCE", "COMPLAINT"],
-        snsDestination: {
-          topicArn: this.notificationTopic.topicArn,
+    new ses.CfnConfigurationSetEventDestination(
+      this,
+      "BounceEventDestination",
+      {
+        configurationSetName:
+          this.configurationSet.name ?? this.configurationSet.ref,
+        eventDestination: {
+          name: "BounceAndComplaintNotifications",
+          enabled: true,
+          matchingEventTypes: ["BOUNCE", "COMPLAINT"],
+          snsDestination: {
+            topicArn: this.notificationTopic.topicArn,
+          },
         },
+      }
+    );
+
+    // Create secrets for sensitive data
+    const emailSecret = new secretsmanager.Secret(this, "EmailSecrets", {
+      description: "Email addresses for TravelEase contact form",
+      secretObjectValue: {
+        sourceEmail: SecretValue.unsafePlainText(props.emailAddress),
+        ownerEmail: SecretValue.unsafePlainText(notificationEmail),
+        businessEmail: SecretValue.unsafePlainText(notificationEmail),
       },
     });
 
-    const formHandler = new lambda.Function(this, "FormHandlerFunction", {
+    const formHandler = new lambda.Function(this, "ContactFormLambda", {
       runtime: lambda.Runtime.PYTHON_3_12,
       handler: "app.lambda_handler",
       code: lambda.Code.fromAsset(path.join(__dirname, "../lambda")),
@@ -70,29 +103,53 @@ export class TravelBackendStack extends Stack {
       environment: {
         TABLE_NAME: this.table.tableName,
         QUEUE_URL: this.queue.queueUrl,
-        SOURCE_EMAIL: props.emailAddress,
-        OWNER_EMAIL: notificationEmail,
-        BUSINESS_EMAIL: notificationEmail,
+        EMAIL_SECRET_ARN: emailSecret.secretArn,
         SNS_TOPIC_ARN: this.notificationTopic.topicArn,
         SES_CONFIGURATION_SET: this.configurationSet.ref,
       },
     });
+
+    // Grant Lambda function permission to read the secret
+    emailSecret.grantRead(formHandler);
 
     this.table.grantWriteData(formHandler);
     this.queue.grantSendMessages(formHandler);
     this.notificationTopic.grantPublish(formHandler);
     props.emailIdentity.grantSendEmail(formHandler);
 
-    this.api = new apigw.RestApi(this, "TravelEaseApi", {
-      restApiName: "TravelEase Backend Service",
-      defaultCorsPreflightOptions: {
-        allowOrigins: apigw.Cors.ALL_ORIGINS,
-        allowMethods: apigw.Cors.ALL_METHODS,
+    // Grant permission to use the SES configuration set
+    formHandler.addToRolePolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ["ses:SendEmail", "ses:SendRawEmail"],
+        resources: [
+          `arn:aws:ses:${this.region}:${this.account}:configuration-set/${this.configurationSet.ref}`,
+          `arn:aws:ses:${this.region}:${this.account}:identity/*`,
+        ],
+      })
+    );
+
+    this.api = new apigwv2.HttpApi(this, "ContactFormApi", {
+      corsPreflight: {
+        allowOrigins: ["*"],
+        allowMethods: [
+          apigwv2.CorsHttpMethod.POST,
+          apigwv2.CorsHttpMethod.OPTIONS,
+        ],
+        allowHeaders: ["*"],
       },
     });
 
-    const submitResource = this.api.root.addResource("submit");
-    submitResource.addMethod("POST", new apigw.LambdaIntegration(formHandler));
+    const formIntegration = new HttpLambdaIntegration(
+      "contact-form-integration",
+      formHandler
+    );
+
+    this.api.addRoutes({
+      path: "/submit",
+      methods: [apigwv2.HttpMethod.POST],
+      integration: formIntegration,
+    });
 
     new CfnOutput(this, "ApiEndpoint", {
       value: this.api.url ?? "",
