@@ -1,0 +1,70 @@
+description: "Recover from Primary Region Failure"
+schemaVersion: "0.3"
+assumeRole: "{{ AutomationAssumeRole }}"
+parameters:
+  SecondaryInstanceId:
+    type: String
+    description: "The ID of the secondary instance to start"
+  SecondaryRegion:
+    type: String
+    description: "The region of the secondary instance"
+  EndpointGroupArn:
+    type: String
+    description: "The ARN of the Global Accelerator Endpoint Group to update"
+  AutomationAssumeRole:
+    type: String
+    description: "The IAM role ARN for SSM to assume"
+
+mainSteps:
+  - name: StartSecondaryInstance
+    action: "aws:changeInstanceState"
+    inputs:
+      InstanceIds:
+        - "{{ SecondaryInstanceId }}"
+      DesiredState: "running"
+      CheckStateOnly: false
+    isEnd: false
+
+  - name: WaitForInstanceRunning
+    action: "aws:waitForAwsResourceProperty"
+    inputs:
+      Service: "ec2"
+      Api: "describeInstanceStatus"
+      PropertySelector: "$.InstanceStatuses[0].InstanceState.Name"
+      DesiredValues:
+        - "running"
+      InstanceIds:
+        - "{{ SecondaryInstanceId }}"
+    isEnd: false
+
+  - name: UpdateGlobalAcceleratorWeight
+    action: "aws:executeScript"
+    inputs:
+      Runtime: "python3.11"
+      Handler: "script_handler"
+      InputPayload:
+        EndpointGroupArn: "{{ EndpointGroupArn }}"
+        InstanceId: "{{ SecondaryInstanceId }}"
+      Script: |
+        import boto3
+        
+        def script_handler(events, context):
+            ga = boto3.client('globalaccelerator')
+            endpoint_group_arn = events['EndpointGroupArn']
+            instance_id = events['InstanceId']
+            
+            # Update the endpoint group to set weight to 100 for the secondary instance
+            # Note: We need to preserve other settings if any, but here we just update the specific endpoint
+            
+            response = ga.update_endpoint_group(
+                EndpointGroupArn=endpoint_group_arn,
+                EndpointConfigurations=[
+                    {
+                        'EndpointId': instance_id,
+                        'Weight': 100,
+                        'ClientIPPreservationEnabled': True
+                    }
+                ]
+            )
+            return {'Status': 'Updated'}
+    isEnd: true
