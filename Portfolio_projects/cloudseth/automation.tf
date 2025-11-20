@@ -35,6 +35,13 @@ resource "aws_iam_role_policy" "lambda_ssm" {
           "ssm:StartAutomationExecution"
         ]
         Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "iam:PassRole"
+        ]
+        Resource = aws_iam_role.ssm_role.arn
       }
     ]
   })
@@ -68,8 +75,10 @@ resource "aws_iam_role_policy" "ssm_policy" {
         Effect = "Allow"
         Action = [
           "ec2:StartInstances",
+          "ec2:DescribeInstances",
           "ec2:DescribeInstanceStatus",
-          "globalaccelerator:UpdateEndpointGroup"
+          "globalaccelerator:UpdateEndpointGroup",
+          "globalaccelerator:DescribeEndpointGroup"
         ]
         Resource = "*"
       }

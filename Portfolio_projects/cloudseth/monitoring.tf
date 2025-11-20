@@ -1,7 +1,14 @@
+# --- Health Check Helpers ---
+locals {
+  primary_health_check_ip = try(aws_instance.primary.public_ip, "")
+  health_check_enabled    = var.enable_health_checks
+}
+
 # --- Route53 Health Check ---
 
 resource "aws_route53_health_check" "primary" {
-  ip_address        = aws_instance.primary.public_ip
+  count             = local.health_check_enabled ? 1 : 0
+  ip_address        = local.primary_health_check_ip
   port              = 80
   type              = "HTTP"
   resource_path     = "/"
@@ -17,6 +24,7 @@ resource "aws_route53_health_check" "primary" {
 # --- CloudWatch Alarm ---
 
 resource "aws_cloudwatch_metric_alarm" "primary_failure" {
+  count               = local.health_check_enabled ? 1 : 0
   alarm_name          = "${var.project_name}-Primary-Failure"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = "1"
@@ -30,9 +38,9 @@ resource "aws_cloudwatch_metric_alarm" "primary_failure" {
   alarm_actions       = [aws_sns_topic.alerts.arn]
   ok_actions          = [aws_sns_topic.alerts.arn]
 
-  dimensions = {
-    HealthCheckId = aws_route53_health_check.primary.id
-  }
+  dimensions = local.health_check_enabled ? {
+    HealthCheckId = aws_route53_health_check.primary[0].id
+  } : {}
 }
 
 # --- SNS Topic ---
@@ -51,4 +59,3 @@ resource "aws_sns_topic_subscription" "email" {
   protocol  = "email"
   endpoint  = var.alert_email
 }
-

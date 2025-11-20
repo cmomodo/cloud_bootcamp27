@@ -46,3 +46,9 @@ variable "alert_email" {
   default     = "ceesay.ml@outlook.com"
 }
 
+variable "enable_health_checks" {
+  description = "Enable Route53 health checks for instances"
+  type        = bool
+  default     = true
+}
+
