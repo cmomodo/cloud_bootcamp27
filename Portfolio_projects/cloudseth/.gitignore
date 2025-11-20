@@ -36,5 +36,4 @@ packaged.yaml
 .idea/
 
 # Artifacts
-*.zip
-generated-diagrams/
+# *.zip
